@@ -9,20 +9,24 @@
     var web3 = new Web3();
     web3.setProvider(new web3.providers.HttpProvider("http://localhost:8545"));
 
-    var greeterSource = 'contract mortal { address owner; function mortal () { owner = msg.sender; } function kill () { if (msg.sender == owner) { suicide (owner); } } } contract greeter is mortal { string greeting; function greeter (string _greeting) public { greeting = _greeting; } function greet () constant returns (string) { return greeting; } } ';
+    var ericaSource = 'contract Abstract { } contract Owned is Abstract { address owner; function Owned ( ) { owner = msg.sender; } function changeOwner ( address newOwner ) onlyowner { owner = newOwner; } modifier onlyowner ( ) { if ( msg.sender == owner ) _ } } contract Mortal is Abstract, Owned { function kill ( ) onlyowner { suicide ( owner ); } } contract Buddy is Abstract, Mortal { } contract Greeter is Buddy { string greeting; function Greeter ( string _greeting ) public { greeting = _greeting; } function hello ( ) constant returns ( string ) { return greeting; } } contract Erica is Buddy { mapping ( uint => string ) phrases; uint current; uint counter; function Erica ( string _a, string _b, string _c ) { current = 0; counter = 3; phrases [ 0 ] = _a; phrases [ 1 ] = _b; phrases [ 2 ] = _c; current = 0; counter = 3; } function add ( string _s ) public { phrases [ counter ] = _s; counter = counter + 1; } function talk ( ) public constant returns ( string ) { string reply = phrases [ current ]; uint next = current + 1; if ( next >= counter ) { current = next; } else { current = 0; } return reply; } }';
 
-    var greeterCompiled = web3.eth.compile.solidity(greeterSource);
+    var ericaCompiled = web3.eth.compile.solidity(ericaSource);
 
 
-    var _greeting = "Hello Erica" ;
-    var greeterContract = web3.eth.contract(greeterCompiled.greeter.info.abiDefinition);
+    var _a = "Hello";
+    var _b = "How are you";
+    var _c = "42";
+    var ericaContract = web3.eth.contract(ericaCompiled.Erica.info.abiDefinition);
 
-    var greeter = greeterContract.new(
-        _greeting,
+    var erica = ericaContract.new(
+        _a,
+        _b,
+        _c,
         {
             from:web3.eth.accounts[0],
-            data: greeterCompiled.greeter.code,
-            gas: 1000000
+            data: ericaCompiled.Erica.code,
+            gas: 3000000
         },
         function(e, contract){
             if(!e) {
@@ -40,7 +44,7 @@
 </head>
 
 <body>
-<p></p>
+<p>Open your JavaScript console.</p>
 </body>
 </html>
 
