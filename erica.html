@@ -9,7 +9,7 @@
     var web3 = new Web3();
     web3.setProvider(new web3.providers.HttpProvider("http://localhost:8545"));
 
-    var ericaSource = 'contract Abstract { } contract Owned is Abstract { address owner; function Owned ( ) { owner = msg.sender; } function changeOwner ( address newOwner ) onlyowner { owner = newOwner; } modifier onlyowner ( ) { if ( msg.sender == owner ) _ } } contract Mortal is Abstract, Owned { function kill ( ) onlyowner { suicide ( owner ); } } contract Buddy is Abstract, Mortal { } contract Greeter is Buddy { string greeting; function Greeter ( string _greeting ) public { greeting = _greeting; } function hello ( ) constant returns ( string ) { return greeting; } } contract Erica is Buddy { mapping ( uint => string ) phrases; uint current; uint counter; function Erica ( string _a, string _b, string _c ) { current = 0; counter = 3; phrases [ 0 ] = _a; phrases [ 1 ] = _b; phrases [ 2 ] = _c; current = 0; counter = 3; } function add ( string _s ) public { phrases [ counter ] = _s; counter = counter + 1; } function talk ( ) public constant returns ( string ) { string reply = phrases [ current ]; uint next = current + 1; if ( next >= counter ) { current = next; } else { current = 0; } return reply; } }';
+    var ericaSource = 'contract Abstract { } contract Owned is Abstract { address owner; function Owned ( ) { owner = msg.sender; } function changeOwner ( address newOwner ) onlyowner { owner = newOwner; } modifier onlyowner ( ) { if ( msg.sender == owner ) _ } } contract Mortal is Abstract, Owned { function kill ( ) onlyowner { suicide ( owner ); } } contract Buddy is Abstract, Mortal { } contract Greeter is Buddy { string greeting; function Greeter ( string _greeting ) public { greeting = _greeting; } function hello ( ) constant returns ( string ) { return greeting; } } contract Erica is Buddy { mapping ( uint => string ) public phrases; uint public current; uint public counter; function Erica ( string _a, string _b, string _c ) { phrases [ 0 ] = _a; phrases [ 1 ] = _b; phrases [ 2 ] = _c; current = 0; counter = 3; } function add ( string _s ) public { phrases [ counter ] = _s; counter = counter + 1; } function talk ( ) public returns ( string ) { string reply = phrases [ current ]; uint next = current + 1; if ( next >= counter ) { current = next; } else { current = 0; } return reply; } function query ( uint id ) public returns ( string ) { string response = phrases [ id ]; return response; } }';
 
     var ericaCompiled = web3.eth.compile.solidity(ericaSource);
 
@@ -35,8 +35,10 @@
                 } else {
                     console.log("Contract mined! Address: " + contract.address);
                     console.log(contract);
+                    console.log(contract.add("None of this is real",{from:web3.eth.accounts[0]}));
+                    console.log(contract.query(0,{from:web3.eth.accounts[0]}));
+                    console.log(contract.talk({from:web3.eth.accounts[0]}));
                 }
-
             }
         }
     );

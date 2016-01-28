@@ -47,9 +47,9 @@ contract Greeter is Buddy
 
 contract Erica is Buddy
 {
-  mapping ( uint => string ) phrases;
-  uint current;
-  uint counter;
+  mapping ( uint => string ) public phrases;
+  uint public current;
+  uint public counter;
 
   function Erica ( string _a, string _b, string _c )
   {
@@ -66,7 +66,7 @@ contract Erica is Buddy
     counter = counter + 1;
   }
 
-  function talk ( ) public constant returns ( string )
+  function talk ( ) public returns ( string )
   {
     string reply = phrases [ current ];
     uint next = current + 1;
@@ -81,5 +81,11 @@ contract Erica is Buddy
     }
 
     return reply;
+  }
+
+  function query ( uint id ) public returns ( string )
+  {
+    string response = phrases [ id ];
+    return response;
   }
 }
