@@ -30,3 +30,4 @@ contract greeter is mortal
     return greeting;
   }
 }
+
